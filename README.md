@@ -1,0 +1,1 @@
+# mac: brew install espeak
