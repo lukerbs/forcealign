@@ -18,6 +18,11 @@ from g2p_en import G2p
 phonemizer = G2p()
 torch.random.manual_seed(0)
 
+def relative_path(path:str):
+    current_dir = os.path.dirname(__file__)
+    return os.path.join(current_dir, path)
+
+
 def alphabetical(text):
 	return re.sub(r'[^a-zA-Z\s]', '', text)
 
@@ -247,10 +252,6 @@ class ForceAlign:
 		play(audio)
 
 
-if "__name__" == "__main__":
-	align = ForceAlign(audio_file='./speech.mp3', txt_file='./speech.txt')
-	align.inference()
-	align.review_alignment()
 
 
 
