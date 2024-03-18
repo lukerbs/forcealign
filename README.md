@@ -55,6 +55,7 @@ for word in words:
 ```
 
 **Example 3: Reviewing Word Level-Alignments**
+
 You can use the review_alignment() method to check the quality of your alignment in real-time. The review_alignment() method will play the audio file and print the individual words at their predicted times. This is useful for heuristically checking the accuracy of the word-level alignment predictions.
 ```
 from forcealign import ForceAlign
