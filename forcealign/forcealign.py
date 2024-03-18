@@ -1,17 +1,14 @@
-import torch
-import torchaudio
 import os
-from pydub import AudioSegment
-from pydub.playback import play
 import re
-from pydub import AudioSegment
-from dataclasses import dataclass
-import matplotlib.pyplot as plt
 import time
 import threading 
-from contextlib import redirect_stdout
-from io import StringIO
+
+import torch
+import torchaudio
 from g2p_en import G2p
+from pydub import AudioSegment
+from pydub.playback import play
+from dataclasses import dataclass
 
 
 # phonemes + graphemes + words

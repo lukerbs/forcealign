@@ -1,20 +1,14 @@
 from setuptools import setup, find_packages
 
-def parse_requirements(file_path):
-    with open(file_path, 'r') as file:
-        requirements = file.read().splitlines()
-    return requirements
-
-requirements = parse_requirements('requirements.txt')
-
 setup(
     name='forcealign',
-    version='0.1.0',
+    version='0.1.1',
     packages=find_packages(),
-    install_requires=requirements,
+    install_requires=['torch==2.2.1', 'torchaudio==2.2.1', 'pydub==0.25.1', 'g2p-en==2.1.0'],
     author='Luke Kerbs',
     description='A Python library for forced alignment of English text to English audio.',
     url='https://github.com/lukerbs/forcealign',
+    keywords=['force align', 'forced alignment', 'audio segmentation', 'audio forced alignment', 'python forced alignment', 'phoneme', 'generate subtitles'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
