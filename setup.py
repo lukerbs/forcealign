@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='forcealign',
-    version='1.0.1',
+    version='1.1.1',
     packages=find_packages(),
     install_requires=['torch==2.2.1', 'torchaudio==2.2.1', 'pydub==0.25.1', 'g2p-en==2.1.0'],
     author='Luke Kerbs',
