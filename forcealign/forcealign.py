@@ -67,7 +67,13 @@ class Segment:
 
 
 class ForceAlign:
-	def __init__(self, audio_file:str, txt_file:str):
+	def __init__(self, audio_file:str, transcript:str):
+		"""Turns an audio file with a transcript into a force alignment 
+
+		Args:
+			audio_file (str): Path to an audio file of a person talking
+			transcript (str): The text transcript of person talking
+		"""
 		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.SPEECH_FILE = audio_file # TODO: add relative path
 		self.bundle = torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H
@@ -97,11 +103,10 @@ class ForceAlign:
 		self.emission = self.emissions[0].cpu().detach()
 
 		# Read the text file to a string 
-		with open(txt_file) as file:
-			self.raw_text = file.read()
-			text = self.raw_text.replace('—',' ')
-			text = alphabetical(text).upper().split()
-			self.transcript = f'{"|".join(text)}|'
+		self.raw_text = transcript
+		text = self.raw_text.replace('—',' ')
+		text = alphabetical(text).upper().split()
+		self.transcript = f'{"|".join(text)}|'
 
 		self.tokens = [self.dictionary[c] for c in self.transcript]
 
