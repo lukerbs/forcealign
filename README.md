@@ -14,14 +14,14 @@ ForceAlign uses Pytorch's WAV2VEC2 pretrained model for acoustic feature extract
 	- Windows: Install from [ffmpeg.org](https://ffmpeg.org/download.html)
 
 # Usage Examples
-To use ForceAlign, instantiate a ForceAlign object instance with your specified audio file and corresponding text file. 
+To use ForceAlign, instantiate a ForceAlign object instance with your specified audio file and corresponding text transcript. 
 
 **Example 1: Getting Word-Level Text Alignments**
 ```
 from forcealign import ForceAlign
 
-# Provide path to audio_file and corresponding txt_file with audio transcript
-align = ForceAlign(audio_file='./speech.mp3', txt_file='./speech.txt')
+# Provide path to audio_file and corresponding transcript
+align = ForceAlign(audio_file='./speech.mp3', transcript=transcript)
 
 # Runs prediction and returns alignment results
 words = align.inference() 
@@ -38,8 +38,8 @@ for word in words:
 ```
 from forcealign import ForceAlign
 
-# Provide path to audio_file and corresponding txt_file with audio transcript
-align = ForceAlign(audio_file='./speech.mp3', txt_file='./speech.txt')
+# Provide path to audio_file and corresponding transcript
+align = ForceAlign(audio_file='./speech.mp3', transcript=transcript)
 
 # Runs prediction and returns alignment results
 words = align.inference() 
@@ -60,8 +60,8 @@ You can use the review_alignment() method to check the quality of your alignment
 ```
 from forcealign import ForceAlign
 
-# Provide path to audio_file and corresponding txt_file with audio transcript
-align = ForceAlign(audio_file='./speech.mp3', txt_file='./speech.txt')
+# Provide path to audio_file and corresponding transcript
+align = ForceAlign(audio_file='./speech.mp3', transcript=transcript)
 
 # Runs prediction and returns alignment results
 words = align.inference() 
