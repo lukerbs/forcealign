@@ -5,7 +5,12 @@ For phoneme level text alignments, ForceAlign currently only supports the [ARPAB
 
 ForceAlign uses Pytorch's WAV2VEC2 pretrained model for acoustic feature extraction and can be ran on both CPU and CUDA GPU devices.
 
-# Installation and Dependencies
+## Features
+- Fast and accurate word and phoneme level forced alignment of text to audio.
+- Is optimized for both CPU and GPU.
+- OS independent! Use ForceAlign on Mac, Windows, and Linux.
+
+## Installation and Dependencies
 1. Pip Install ForceAlign
 	- `pip3 install forcealign`
 2. Install ffmpeg
@@ -13,7 +18,7 @@ ForceAlign uses Pytorch's WAV2VEC2 pretrained model for acoustic feature extract
 	- Linux: `sudo apt install ffmpeg`
 	- Windows: Install from [ffmpeg.org](https://ffmpeg.org/download.html)
 
-# Usage Examples
+## Usage Examples
 To use ForceAlign, instantiate a ForceAlign object instance with your specified audio file and corresponding text transcript. 
 
 **Example 1: Getting Word-Level Text Alignments**
@@ -24,13 +29,13 @@ from forcealign import ForceAlign
 align = ForceAlign(audio_file='./speech.mp3', transcript=transcript)
 
 # Runs prediction and returns alignment results
-words = align.inference() 
+words = align.inference()
 
 # Show predicted word-level alignments
 for word in words:
 	print(word.word) # The word spoken in audio at associated time
 	print(word.time_start) # Time (seconds) the word starts in speech.mp3
-	print(word.time_end) # Time (seconds) the word ends in speech.mp3
+	print(word.time_end) # Time (seconds) the word ends in speech.mp3w
 
 ```
 
@@ -44,7 +49,7 @@ align = ForceAlign(audio_file='./speech.mp3', transcript=transcript)
 # Runs prediction and returns alignment results
 words = align.inference() 
 
-# Show predicted phenome-level alignments
+# Accessing predicted phenome-level alignments
 for word in words:
 	print(word.word)
 	for phoneme in word.phonemes:
@@ -71,15 +76,15 @@ align.review_alignment()
 
 ```
 
-# Use Cases
+## Use Cases
 Forced alignment can be useful for generating subtitles for video, and for generating automated lip-syncing of animated characters with phoneme-level forced alignments. 
 
-# FAQ
+## FAQ
 **1. Does ForceAlign have speech-to-text capabilities?**
 No. This is a feature that I plan on adding soon when I have time.
 
 **2. Can ForceAlign be used with both CPU and GPU?**
 Yes. Running with CPU is surprisingly fast, and it will be even faster with GPU. 
 
-# Acknowledgements
+## Acknowledgements
 This project is heavily based upon a demo from Pytorch by Moto Hira: [FORCED ALIGNMENT WITH WAV2VEC2](https://pytorch.org/audio/stable/tutorials/forced_alignment_tutorial.html)
