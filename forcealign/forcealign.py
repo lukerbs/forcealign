@@ -36,6 +36,7 @@ class Word:
 	phonemes: list
 	time_start: float
 	time_end: float
+	breath: bool
 
 	def __repr__(self):
 		return f'{self.word}: {self.time_start} -- {self.time_end}(s)'
@@ -103,6 +104,7 @@ class ForceAlign:
 		self.emission = self.emissions[0].cpu().detach()
 
 		# Read the text file to a string 
+		self.breath_idx = get_breath_idx(transcript)
 		self.raw_text = transcript
 		text = self.raw_text.replace('—',' ')
 		text = alphabetical(text).upper().split()
@@ -221,6 +223,7 @@ class ForceAlign:
 		word_segments = self.merge_words(segments)
 
 		words = []
+		idx = 0
 		for word in word_segments:
 			ratio = self.waveform.size(1) / trellis.size(0)
 			start = int(ratio * word.start)
@@ -238,7 +241,13 @@ class ForceAlign:
 				self.phoneme_alignments.append(phoneme)
 				start_phoneme += phoneme_duration
 
-			words.append(Word(word=word.label, phonemes=phonemes, time_start=time_start, time_end=time_end))
+			if idx in self.breath_idx:
+				breath = True
+			else:
+				breath = False
+
+			words.append(Word(word=word.label, phonemes=phonemes, time_start=time_start, time_end=time_end, breath=breath))
+			idx += 1
 
 		self.word_alignments = words
 		return words
@@ -254,7 +263,17 @@ class ForceAlign:
 		play(audio)
 
 
+def get_breath_idx(transcript):
+	transcript = transcript.replace('—',' ')
+	transcript = alpha_with_punct(transcript).upper().split()
+	idxs = []
+	for i in range(len(transcript)-1):
+		if "," in transcript[i] or "." in transcript[i]:
+			idxs.append(i)
+	return idxs
 
+def alpha_with_punct(text):
+	return re.sub(r'[^a-zA-Z\s,.]', '', text)
 
 
 
