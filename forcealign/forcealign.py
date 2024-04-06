@@ -269,7 +269,7 @@ def get_breath_idx(transcript):
 	idxs = []
 	for i in range(len(transcript)-1):
 		if "," in transcript[i] or "." in transcript[i]:
-			idxs.append(i)
+			idxs.append(i+1)
 	return idxs
 
 def alpha_with_punct(text):
