@@ -77,7 +77,7 @@ class ForceAlign:
 			transcript (str): The text transcript of person talking
 		"""
 		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-		self.SPEECH_FILE = audio_file # TODO: add relative path
+		self.SPEECH_FILE = audio_file
 		self.bundle = torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H
 		self.model = self.bundle.get_model().to(self.device)
 		self.labels = self.bundle.get_labels()
@@ -85,22 +85,34 @@ class ForceAlign:
 
 		# Load the audio file 
 		with torch.inference_mode():
-			if self.SPEECH_FILE.rsplit('.', 1)[-1] == 'mp3':
-				audio = AudioSegment.from_mp3(self.SPEECH_FILE)
-				self.SPEECH_FILE = self.SPEECH_FILE.replace('mp3', 'wav')
-				self.audio_format = 'wav'
-				audio.export(self.SPEECH_FILE, format=self.audio_format)
-				self.waveform, sr = torchaudio.load(self.SPEECH_FILE)
-			else:
-				self.audio_format = 'wav'
-				self.waveform, sr = torchaudio.load(self.SPEECH_FILE)
+			try:
+				if not os.path.exists(self.SPEECH_FILE):
+					raise FileNotFoundError(f"Audio file not found: {self.SPEECH_FILE}")
+					
+				if self.SPEECH_FILE.lower().endswith('.mp3'):
+					# Convert MP3 to WAV using pydub
+					audio = AudioSegment.from_mp3(self.SPEECH_FILE)
+					wav_path = self.SPEECH_FILE.rsplit('.', 1)[0] + '.wav'
+					audio.export(wav_path, format='wav')
+					self.SPEECH_FILE = wav_path
+					self.audio_format = 'wav'
+				else:
+					self.audio_format = 'wav'
 
-				
-			if sr != self.bundle.sample_rate:
-				self.waveform = torchaudio.functional.resample(self.waveform, orig_freq=sr, new_freq=self.bundle.sample_rate)
+				# Load the audio file using torchaudio
+				try:
+					self.waveform, sr = torchaudio.load(self.SPEECH_FILE)
+				except Exception as e:
+					raise RuntimeError(f"Error loading audio file with torchaudio: {str(e)}")
 
-			self.emissions, _ = self.model(self.waveform.to(self.device))
-			self.emissions = torch.log_softmax(self.emissions, dim=-1)
+				if sr != self.bundle.sample_rate:
+					self.waveform = torchaudio.functional.resample(self.waveform, orig_freq=sr, new_freq=self.bundle.sample_rate)
+
+				self.emissions, _ = self.model(self.waveform.to(self.device))
+				self.emissions = torch.log_softmax(self.emissions, dim=-1)
+
+			except Exception as e:
+				raise RuntimeError(f"Error processing audio file: {str(e)}")
 
 		self.emission = self.emissions[0].cpu().detach()
 

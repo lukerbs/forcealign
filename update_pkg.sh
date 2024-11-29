@@ -1,4 +1,5 @@
 #!/bin/bash
-rm -r forcealign.egg-info dist build
+pip3 uninstall forcealign
+rm -rf dist/
 python3 setup.py sdist bdist_wheel
-twine upload dist/*  
+twine upload dist/*
