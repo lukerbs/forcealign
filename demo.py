@@ -1,7 +1,8 @@
 from forcealign import ForceAlign
 
 # Load audio and text file (audio file supports .wav or .mp3 formats)
-align = ForceAlign(audio_file='./path/to/speech.mp3', txt_file='./path/to/speech.txt')
+transcript="The dog quickly jumped over the large cat and made its way out the door."
+align = ForceAlign(audio_file='./test/speech.mp3', transcript=transcript)
 
 # Predict alignments
 words = align.inference() 
