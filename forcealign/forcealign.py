@@ -11,11 +11,15 @@ from pydub import AudioSegment
 from pydub.playback import play
 from dataclasses import dataclass
 
+from .transcriber import speech_to_text
+from .utils import alphabetical, get_breath_idx
+
 # Phonemes + graphemes + words
 phonemizer = G2p()
 torch.random.manual_seed(0)
 
 
+# Utility functions
 def relative_path(path: str):
     current_dir = os.path.dirname(__file__)
     return os.path.join(current_dir, path)
@@ -69,20 +73,6 @@ class Segment:
         return self.end - self.start
 
 
-class GreedyCTCDecoder(torch.nn.Module):
-    def __init__(self, labels, blank=0):
-        super().__init__()
-        self.labels = labels
-        self.blank = blank
-
-    def forward(self, emission: torch.Tensor) -> str:
-        """Greedy decoding for transcript generation."""
-        indices = torch.argmax(emission, dim=-1)  # [num_seq,]
-        indices = torch.unique_consecutive(indices, dim=-1)
-        indices = [i for i in indices if i != self.blank]
-        return "".join([self.labels[i] for i in indices])
-
-
 class ForceAlign:
     def __init__(self, audio_file: str, transcript: str = None):
         """Turns an audio file with a transcript into a force alignment
@@ -103,8 +93,8 @@ class ForceAlign:
 
         # Handle transcript
         if transcript is None:
-            print("No transcript provided. Generating transcript...")
-            self.raw_text = self._generate_transcript()
+            print("No transcript provided. Generating transcript using speech_to_text...")
+            self.raw_text = speech_to_text(self.SPEECH_FILE)  # Use transcriber.speech_to_text
             print(f"Generated Transcript: {self.raw_text}")
         else:
             self.raw_text = transcript
@@ -139,15 +129,6 @@ class ForceAlign:
             self.emissions, _ = self.model(self.waveform.to(self.device))
             self.emissions = torch.log_softmax(self.emissions, dim=-1)
             self.emission = self.emissions[0].cpu().detach()
-
-    def _generate_transcript(self):
-        """Generate a transcript using Wav2Vec2."""
-        with torch.inference_mode():
-            emissions, _ = self.model(self.waveform.to(self.device))
-        emission = torch.log_softmax(emissions, dim=-1)
-        decoder = GreedyCTCDecoder(labels=self.labels)
-        transcript = decoder(emission[0])
-        return transcript.replace("|", " ").strip()
 
     def get_trellis(self):
         tokens = self.tokens
@@ -274,20 +255,3 @@ class ForceAlign:
             timers.append(timer)
             timer.start()
         play(audio)
-
-
-def get_breath_idx(transcript):
-    transcript = transcript.replace("—", " ")
-    transcript = alpha_with_punct(transcript).upper().split()
-    idxs = []
-    for i in range(len(transcript) - 1):
-        if "," in transcript[i]:
-            idxs.append(i + 1)
-        elif "." in transcript[i] and random.choice([True, False, False]):
-            idxs.append(i + 1)
-
-    return idxs
-
-
-def alpha_with_punct(text):
-    return re.sub(r"[^a-zA-Z\s,.]", "", text)
