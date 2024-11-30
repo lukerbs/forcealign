@@ -1,17 +1,38 @@
 from forcealign import ForceAlign
 
-# Load audio and text file (audio file supports .wav or .mp3 formats)
-transcript="The dog quickly jumped over the large cat and made its way out the door."
-align = ForceAlign(audio_file='./test/speech.mp3', transcript=transcript)
+# Case 1: Providing a transcript
+print("=== Case 1: Using Provided Transcript ===")
+transcript = "The dog quickly jumped over the large cat and made its way out the door."
+align_with_transcript = ForceAlign(audio_file="./test/speech.mp3", transcript=transcript)
 
-# Predict alignments
-words = align.inference() 
+# Predict alignments with provided transcript
+words_with_transcript = align_with_transcript.inference()
 
-# Show predictions
-for word in words:
-	print(word.word)
-	print(word.time_start)
-	print(word.time_end)
+# Show predictions with provided transcript
+print("\nWord-level alignments:")
+for word in words_with_transcript:
+    print(f"Word: {word.word}, Start: {word.time_start}s, End: {word.time_end}s")
 
 # Live audio review of results
-align.review_alignment()
+print("\nReviewing alignments with provided transcript...")
+align_with_transcript.review_alignment()
+
+
+# Case 2: Without providing a transcript (speech-to-text capability)
+print("\n=== Case 2: Using Automatic Speech-to-Text ===")
+align_no_transcript = ForceAlign(audio_file="./test/speech.mp3")  # No transcript provided
+
+# Predict alignments with generated transcript
+words_no_transcript = align_no_transcript.inference()
+
+# Show predictions with generated transcript
+print("\nGenerated Transcript:")
+print(align_no_transcript.raw_text)
+
+print("\nWord-level alignments:")
+for word in words_no_transcript:
+    print(f"Word: {word.word}, Start: {word.time_start}s, End: {word.time_end}s")
+
+# Live audio review of results
+print("\nReviewing alignments with generated transcript...")
+align_no_transcript.review_alignment()
