@@ -1,3 +1,4 @@
+
 # ForceAlign 
 ForceAlign is a Python library for forced alignment of English text to English audio. It can generate **word** or [**phoneme**](https://en.wikipedia.org/wiki/Phoneme)-level alignments, identifying the specific time a word or phoneme was spoken within an audio recording. ForceAlign supports `.mp3` and `.wav` audio file formats.
 
@@ -71,7 +72,21 @@ for word in words:
 
 ---
 
-### Example 3: Getting Phoneme-Level Text Alignments
+### Example 3: Speech-to-Text Conversion
+ForceAlign can be used as a standalone speech-to-text tool.
+
+```python
+from forcealign import speech_to_text
+
+# Generate transcript directly from an audio file
+generated_transcript = speech_to_text("./speech.mp3")
+print(generated_transcript)
+# Output: "THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG"
+```
+
+---
+
+### Example 4: Getting Phoneme-Level Text Alignments
 ```python
 from forcealign import ForceAlign
 
@@ -91,7 +106,7 @@ for word in words:
 
 ---
 
-### Example 4: Reviewing Word-Level Alignments in Real-Time
+### Example 5: Reviewing Word-Level Alignments in Real-Time
 ```python
 from forcealign import ForceAlign
 
@@ -105,28 +120,6 @@ align.review_alignment()
 
 ---
 
-## Where ForceAlign Works Well
-ForceAlign excels in the following scenarios:
-1. **Clear Audio Recordings**:
-   - Audio with minimal background noise, clear enunciation, and consistent speaking patterns.
-2. **Short and Medium-Length Recordings**:
-   - Audio files up to ~30 minutes, where transcription and alignment can be processed efficiently.
-3. **Standard English Pronunciation**:
-   - Recordings with native or near-native English pronunciation.
-
----
-
-## Where ForceAlign May Struggle
-1. **Noisy Audio**:
-   - Recordings with heavy background noise or overlapping speech may result in reduced transcription and alignment accuracy.
-2. **Non-Standard English Accents**:
-   - Strong regional accents or dialects not represented in the Wav2Vec2 training data may lead to transcription errors.
-3. **Long Audio Files**:
-   - For recordings exceeding ~1 hour, memory and processing time may become significant issues.
-4. **Non-English Speech**:
-   - ForceAlign currently supports English only.
-
----
 
 ## Use Cases
 - **Subtitle Generation**:
