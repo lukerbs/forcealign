@@ -1,8 +1,6 @@
 import os
 import re
-import time
 import threading
-import random
 
 import torch
 import torchaudio
@@ -219,6 +217,7 @@ class ForceAlign:
         word_segments = self.merge_words(segments)
 
         words = []
+        phoneme_l = []
         idx = 0
         for word in word_segments:
             ratio = self.waveform.size(1) / trellis.size(0)
@@ -233,8 +232,10 @@ class ForceAlign:
             start_phoneme = time_start
             for i, _ in enumerate(phonemes):
                 end_phoneme = start_phoneme + phoneme_duration - 0.1
-                phoneme = Phoneme(phoneme=phonemes[i], time_start=start_phoneme, time_end=end_phoneme)
-                self.phoneme_alignments.append(phoneme)
+                phoneme_l.append(
+                    Phoneme(phoneme=_, time_start=start_phoneme, time_end=end_phoneme)
+                )
+                self.phoneme_alignments.append(phonemes)
                 start_phoneme += phoneme_duration
 
             breath = idx in self.breath_idx
@@ -244,6 +245,7 @@ class ForceAlign:
             idx += 1
 
         self.word_alignments = words
+        self.phoneme_alignments = phoneme_l
         return words
 
     def review_alignment(self):
@@ -251,6 +253,16 @@ class ForceAlign:
 
         timers = []
         for word in self.word_alignments:
+            timer = threading.Timer(word.time_start, print, args=[repr(word)])
+            timers.append(timer)
+            timer.start()
+        play(audio)
+
+    def review_phoneme_alignment(self):
+        audio = AudioSegment.from_file(self.SPEECH_FILE, format="wav")
+
+        timers = []
+        for word in self.phoneme_alignments:
             timer = threading.Timer(word.time_start, print, args=[repr(word)])
             timers.append(timer)
             timer.start()
